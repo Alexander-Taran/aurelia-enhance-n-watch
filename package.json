@@ -1,0 +1,70 @@
+{
+  "name": "aurelia-enhance-n-watch",
+  "description": "An Aurelia plugin project.",
+  "version": "0.1.0",
+  "repository": {
+    "type": "???",
+    "url": "???"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/jasmine": "^4.0.3",
+    "@types/node": "^17.0.35",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "@typescript-eslint/parser": "^5.25.0",
+    "aurelia-animator-css": "^1.0.4",
+    "aurelia-bootstrapper": "^2.4.0",
+    "aurelia-cli": "^2.0.3",
+    "aurelia-testing": "^1.1.0",
+    "connect": "^3.7.0",
+    "connect-history-api-fallback": "^1.6.0",
+    "connect-injector": "^0.4.4",
+    "debounce": "^1.2.1",
+    "del": "^6.1.0",
+    "eslint": "^8.15.0",
+    "gulp": "^4.0.2",
+    "gulp-eslint": "^6.0.0",
+    "gulp-if": "^3.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-watch": "^5.0.1",
+    "jasmine-core": "^4.1.1",
+    "karma": "^6.3.20",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-jasmine": "^4.0.2",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sourcemap-loader": "^0.3.8",
+    "karma-typescript-preprocessor": "^0.4.0",
+    "minimatch": "^5.1.0",
+    "open": "^8.4.0",
+    "promise-polyfill": "^8.2.3",
+    "requirejs": "^2.3.6",
+    "serve-static": "^1.15.0",
+    "server-destroy": "^1.0.1",
+    "socket.io": "^4.5.1",
+    "text": "requirejs/text",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "scripts": {
+    "build": "au build-plugin --env prod",
+    "start": "au run",
+    "watch": "au build-plugin --watch",
+    "prepare": "npm run build",
+    "pretest": "au lint",
+    "preversion": "au test",
+    "test": "au test"
+  },
+  "engines": {
+    "node": ">=14.15.0"
+  },
+  "main": "dist/commonjs/index.js",
+  "module": "dist/native-modules/index.js",
+  "private": true,
+  "files": [
+    "dist",
+    "src"
+  ]
+}
