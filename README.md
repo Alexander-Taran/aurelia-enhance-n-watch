@@ -10,8 +10,10 @@ And your legacy application can utilize other means of dynamically updating page
 
 ## Usage
 
-You can consume this plugin directly by:
+Add plugin to your Aurelia project:
 ```shell
+npm i aurelia-enhance-n-watch
+# or 
 npm i github:Alexander-Taran/aurelia-enhance-n-watch
 # or plain url
 npm i https:/github.com/Alexander-Taran/aurelia-enhance-n-watch.git
@@ -32,6 +34,9 @@ import { Aurelia } from 'aurelia-framework';
 import { bootstrap } from 'aurelia-bootstrapper'
 import { HelloWorld } from './elements/hello-world';
 import environment from './environment';
+
+// To have code completion and type checking for new method on aurelia instance
+import type {} from "aurelia-enhance-n-watch" 
 
 function configure(aurelia: Aurelia): void {
   aurelia.use
