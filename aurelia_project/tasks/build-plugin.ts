@@ -13,15 +13,15 @@ function clean() {
 let build = gulp.series(
   gulp.parallel(
     // package.json "module" field pointing to dist/native-modules/index.js
-    pluginMarkup('dist/native-modules'),
-    pluginCSS('dist/native-modules'),
-    pluginJson('dist/native-modules'),
+    // pluginMarkup('dist/native-modules'),
+    // pluginCSS('dist/native-modules'),
+    // pluginJson('dist/native-modules'),
     buildPluginJavaScript('dist/native-modules', 'es2015'),
 
     // package.json "main" field pointing to dist/native-modules/index.js
-    pluginMarkup('dist/commonjs'),
-    pluginCSS('dist/commonjs'),
-    pluginJson('dist/commonjs'),
+    // pluginMarkup('dist/commonjs'),
+    // pluginCSS('dist/commonjs'),
+    // pluginJson('dist/commonjs'),
     buildPluginJavaScript('dist/commonjs', 'commonjs'),
   ), (done) => {
     console.log('Finish building Aurelia plugin to dist/commonjs and dist/native-modules.');

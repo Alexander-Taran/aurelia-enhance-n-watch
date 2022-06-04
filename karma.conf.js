@@ -51,10 +51,10 @@ module.exports = function(config) {
      * 1. Comment the following lines
      * 2. Uncomment the above "browsers" setting
     */
-    browsers: ['Safari'],
-    // browsers: [
-    //   'ChromeHeadless',
-    // ],
+    // browsers: ['Safari'],
+    browsers: [
+      'ChromeHeadless',
+    ],
     customLaunchers: {
       'ChromeHeadless': {
         base: 'Chrome',

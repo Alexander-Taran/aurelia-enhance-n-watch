@@ -5,22 +5,22 @@ const logger = getLogger("enhance-watch")
 
 declare module "aurelia-framework" {
   interface Aurelia {
-    enhanceAndWatch(bindingContext?: Object, applicationHost?: string | Element): Promise<Aurelia>
+    enhanceAndWatch(bindingContext?: unknown, applicationHost?: string | Element): Promise<Aurelia>
     stopWatch(): void
   }
 }
 
 export function configure(config: FrameworkConfiguration) {
-  //config.globalResources([]);
-  config.aurelia
-  const me = new MutationEnhancer(config.aurelia)
-  config.aurelia.enhanceAndWatch = async function (bindingContext?: Object, applicationHost?: string | Element) {
-    me.watch(bindingContext, applicationHost)
+  const mutationEnhancer = new MutationEnhancer(config.aurelia)
+
+  config.aurelia.enhanceAndWatch = async function (bindingContext?: unknown, applicationHost?: string | Element) {
+    mutationEnhancer.watch(bindingContext, applicationHost)
     logger.info("calling .enhance()")
     return this.enhance(bindingContext, applicationHost)
   }
+
   config.aurelia.stopWatch = async function () {
-    me.unwatch()
+    mutationEnhancer.unwatch()
   }
 }
 
@@ -28,7 +28,7 @@ export function configure(config: FrameworkConfiguration) {
 
 declare module "aurelia-templating" {
   interface ViewResources {
-    elements: {}
+    elements: { [k: string]: unknown }
   }
 }
 
@@ -36,15 +36,15 @@ class MutationEnhancer {
   private engine: TemplatingEngine;
   private container: Container;
   private enhanceSelector: string;
-  observer: MutationObserver;
-  bindingContext: object;
+  private observer: MutationObserver;
+  private bindingContext: unknown;
 
   constructor(private au: Aurelia) {
 
     this.container = au.container
     this.engine = au.container.get(TemplatingEngine)
   }
-  watch(bindingContext?: object, applicationHost?: string | Element) {
+  watch(bindingContext?: unknown, applicationHost?: string | Element) {
     this.bindingContext = bindingContext
     this.enhanceSelector = Object.keys(this.au.resources.elements)
       .filter(x => ['compose', 'router-view'].indexOf(x) === -1)
@@ -60,27 +60,31 @@ class MutationEnhancer {
   private onMutationcallback(mutationsList: MutationRecord[]) {
 
 
-    for (var mutation of mutationsList) {
-
+    for (const mutation of mutationsList) {
       if (mutation.type == 'childList') {
+        // handle added nodes
+        for (let i = 0; i < mutation.addedNodes.length; ++i) {
+          const node = mutation.addedNodes[i];
+          // only look at Element nodes
+          if (node.nodeType != Node.ELEMENT_NODE) { continue }
 
-
-        for (var i = 0; i < mutation.addedNodes.length; i++) {
-          let n = mutation.addedNodes[i];
-          if (n.nodeType != Node.ELEMENT_NODE) {
-            continue
-          }
-          let nodes: Element[] | NodeList
-          if (this.au.resources.getElement(n.nodeName.toLowerCase())) {
-            nodes = [n as Element]
+          // If added node is not a custom element we can enhance
+          // Look for it's childreen that we can enhance
+          // Either way we'll get a collection of nodes after if/else
+          // Probably empty
+          let nodesToEnhance: Element[] | NodeList
+          if (this.au.resources.getElement(node.nodeName.toLowerCase())) {
+            nodesToEnhance = [node as Element]
           } else {
-            nodes = (n as Element).querySelectorAll(this.enhanceSelector)
+            nodesToEnhance = (node as Element).querySelectorAll(this.enhanceSelector)
           }
-          for (let ni = 0; ni < nodes.length; ni++) {
-            let e = nodes[ni] as Element;
+
+          for (let ni = 0; ni < nodesToEnhance.length; ni++) {
+            const e = nodesToEnhance[ni] as Element;
 
             if (e.getAttribute('au-target-id')) {
-              logger.warn('node already enchanced', e);
+              logger.debug('node already enchanced, attaching', e);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               ((e as any).au.controller as Controller).attached()
 
             }
@@ -90,33 +94,33 @@ class MutationEnhancer {
                 container: this.container,
                 resources: this.au.resources,
                 bindingContext: this.bindingContext
-
               })
             }
           }
         }
-        for (var i = 0; i < mutation.removedNodes.length; i++) {
-          let n = mutation.removedNodes[i];
-          if (n.nodeType != Node.ELEMENT_NODE) {
+
+        for (let i = 0; i < mutation.removedNodes.length; i++) {
+          const node = mutation.removedNodes[i];
+          if (node.nodeType != Node.ELEMENT_NODE) {
             continue
           }
-          let nodes: Element[] | NodeList
-          if (this.au.resources.getElement(n.nodeName.toLowerCase())) {
-            nodes = [n as Element]
+          let nodesToDetach: Element[] | NodeList
+          if (this.au.resources.getElement(node.nodeName.toLowerCase())) {
+            nodesToDetach = [node as Element]
           } else {
-            nodes = (n as Element).querySelectorAll(this.enhanceSelector)
+            nodesToDetach = (node as Element).querySelectorAll(this.enhanceSelector)
           }
-          for (let ni = 0; ni < nodes.length; ni++) {
-            let e = nodes[ni] as Element;
+          for (let ni = 0; ni < nodesToDetach.length; ni++) {
+            const e = nodesToDetach[ni] as Element;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (!(e as any).au) {
-              logger.warn('no au-target-id on removed node', e)
+              logger.debug('No au-target-id on removed node. Node is removed before it was enhanced', e)
 
             }
             if (e.getAttribute('au-target-id')) {
-
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               ((e as any).au.controller as Controller).detached()
             }
-
           }
         }
       }

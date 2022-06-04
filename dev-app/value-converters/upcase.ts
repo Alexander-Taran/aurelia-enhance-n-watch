@@ -1,7 +1,7 @@
 export class UpcaseValueConverter {
-  
-  toView(value: any): string {
-  
+
+  toView(value: unknown): string {
+
     return typeof value === 'string' ? value.toUpperCase() : '';
   }
 }
