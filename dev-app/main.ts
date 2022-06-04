@@ -18,11 +18,10 @@ function configure(aurelia: Aurelia): void {
   }
 
   aurelia.start().then(() => {
-    debugger
     aurelia.enhanceAndWatch({
       message: 'from Aurelia!'
     })
   });
 }
-debugger
+
 bootstrap(configure)

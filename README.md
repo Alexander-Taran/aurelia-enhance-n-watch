@@ -1,5 +1,69 @@
 # `aurelia-enhance-n-watch`
 
+Aurelia has a nice `.enhance()` method for enhancing legacy apps/sites.  
+You can define your custom elements and bring them to life when having a SPA or MPA is not an option.
+What this method does not have is the ability to watch the page for new instances of custom elements.
+
+And your legacy application can utilize other means of dynamically updating page content.
+
+`.enhanceAndWatch()` tries it's best to fill that gap.
+
+## Usage
+
+You can consume this plugin directly by:
+```shell
+npm i github:Alexander-Taran/aurelia-enhance-n-watch
+# or plain url
+npm i https:/github.com/Alexander-Taran/aurelia-enhance-n-watch.git
+```
+
+Then load the plugin in app's `main.ts` like this.
+```ts
+aurelia.use.plugin('aurelia-enhance-n-watch');
+// for webpack user, use PLATFORM.moduleName wrapper
+aurelia.use.plugin(PLATFORM.moduleName('aurelia-enhance-n-watch'));
+```
+
+And then replace `.enhance()` with `.enhanceAndWatch()` call. Signature is the same. 
+
+Full manual bootstrap example:
+```ts
+import { Aurelia } from 'aurelia-framework';
+import { bootstrap } from 'aurelia-bootstrapper'
+import { HelloWorld } from './elements/hello-world';
+import environment from './environment';
+
+function configure(aurelia: Aurelia): void {
+  aurelia.use
+    .standardConfiguration()
+    .globalResources(HelloWorld)
+    .plugin('aurelia-enhance-n-watch');
+
+  aurelia.use.developmentLogging(environment.debug ? 'debug' : 'warn');
+
+  if (environment.testing) {
+    aurelia.use.plugin('aurelia-testing');
+  }
+
+  aurelia.start().then(() => {
+    aurelia.enhanceAndWatch({
+      message: 'from Aurelia!'
+    })
+  });
+}
+
+bootstrap(configure)
+```  
+
+
+For example of manual bootstrapping Aurelia, you can look in [dev-app/main.ts](./dev-app/main.ts)
+and in the [Aurelia documentation](http://aurelia.io/docs/fundamentals/app-configuration-and-startup#leveraging-progressive-enhancement)
+
+
+
+
+# Rest of the generated readme.md
+
 This project is bootstrapped by [aurelia-cli](https://github.com/aurelia/cli).
 
 This Aurelia plugin project has a built-in dev app (with CLI built-in bundler and RequireJS) to simplify development.
