@@ -13,13 +13,12 @@ declare module "aurelia-framework" {
 export function configure(config: FrameworkConfiguration) {
   const mutationEnhancer = new MutationEnhancer(config.aurelia)
 
-  config.aurelia.enhanceAndWatch = async function (bindingContext?: unknown, applicationHost?: string | Element) {
+  config.aurelia.enhanceAndWatch = function (bindingContext?: unknown, applicationHost?: string | Element) {
     mutationEnhancer.watch(bindingContext, applicationHost)
-    logger.info("calling .enhance()")
     return this.enhance(bindingContext, applicationHost)
   }
 
-  config.aurelia.stopWatch = async function () {
+  config.aurelia.stopWatch = function () {
     mutationEnhancer.unwatch()
   }
 }
