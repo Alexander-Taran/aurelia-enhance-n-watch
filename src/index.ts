@@ -84,7 +84,7 @@ class MutationEnhancer {
             if (e.getAttribute('au-target-id')) {
               logger.debug('node already enchanced, attaching', e);
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ((e as any).au.controller as Controller).attached()
+              ((e as any).au.controller as Controller).attached();
 
             }
             else {
@@ -118,7 +118,14 @@ class MutationEnhancer {
             }
             if (e.getAttribute('au-target-id')) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ((e as any).au.controller as Controller).detached()
+              ((e as any).au.controller as Controller).unbind();
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ((e as any).au.controller as Controller).detached();
+              e.classList.remove('au-target')
+              e.removeAttribute('au-target-id')
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              delete (e as any).au
+
             }
           }
         }
