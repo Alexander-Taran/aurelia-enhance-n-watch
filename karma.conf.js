@@ -10,6 +10,7 @@ let testSrc = [
 
 let output = project.platform.output;
 let appSrc = project.build.bundles.map(x => path.join(output, x.name));
+let pluginSrc = appSrc.find(b=>b.indexOf('plugin')>0);
 let entryIndex = appSrc.indexOf(path.join(output, project.build.loader.configTarget));
 let entryBundle = appSrc.splice(entryIndex, 1)[0];
 let sourceMaps = [{pattern:'scripts/**/*.js.map', included: false}];
@@ -28,13 +29,14 @@ module.exports = function(config) {
     exclude: [],
     preprocessors: {
       [karmaConfig.source]: [project.transpiler.id],
-      [appSrc]: ['sourcemap']
+      [appSrc]: ['sourcemap'],
+      [pluginSrc]:['sourcemap','coverage']
     },
     typescriptPreprocessor: {
       typescript: require('typescript'),
       options: compilerOptions
     },
-    reporters: ['progress'],
+    reporters: ['progress','coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
@@ -65,6 +67,20 @@ module.exports = function(config) {
           '--remote-debugging-port=9222'
         ]
       }
+    },
+
+
+    coverageReporter: {
+      // specify a common output directory
+      dir: 'test/coverage-karma',
+      reporters: [
+        // {type : 'none'},
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'report-html' },
+        { type: 'lcovonly', subdir: '.', file: 'lcov.info' }
+        // { type: 'text', subdir: '.', file: 'text.txt' },
+        // { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
+      ]
     },
     /** **************************************************************************** */
 

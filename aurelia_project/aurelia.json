@@ -77,9 +77,15 @@
     },
     "bundles": [
       {
-        "name": "app-bundle.js",
+        "name": "plugin-bundle.js",
         "source": [
-          "**/*"
+          "**/src/**/*"
+        ]
+      },
+      {
+        "name": "dev-app-bundle.js",
+        "source": [
+          "**/dev-app/**/*"
         ]
       },
       {

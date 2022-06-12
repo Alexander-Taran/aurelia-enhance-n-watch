@@ -47,7 +47,7 @@ describe('enhance-n-watch', () => {
   let bindSpy
   let unbindSpy
   let consoleLogDebugSpy
-
+  let aureliaInstance
   const bindingContext = {
     message: 'from Aurelia!'
   }
@@ -56,6 +56,7 @@ describe('enhance-n-watch', () => {
     bindingContext.message = 'from Aurelia!'
   }
   async function configure(aurelia: Aurelia) {
+    aureliaInstance = aurelia
     aurelia.use
       .standardConfiguration()
       .globalResources(HelloWorld)
@@ -87,6 +88,23 @@ describe('enhance-n-watch', () => {
     resetBindingContext()
     done()
   })
+
+  afterAll(async () => {
+
+    document.documentElement.innerHTML = ''
+    aureliaInstance.stopWatch()
+    await oneFrame()
+    expect(document.documentElement.innerText).toBe('')
+
+    const host = document.createElement('div');
+    host.innerHTML = "<hello-world message.bind=\"message\"></hello-world>";
+    const component = host.children[0] // refenece to customElement
+    document.body.appendChild(host);
+
+    await oneFrame()
+    expect(host.innerText.trim()).toBe('')
+  })
+  
   it('enhances component on dom mutation', async () => {
 
     // create some dome with CustomElement inside
@@ -130,9 +148,26 @@ describe('enhance-n-watch', () => {
     expect(host.innerText.trim()).toBe('Hello from test!')
   })
 
+  it('covers non element nodes', async () => {
+    const host = document.createElement('div');
+    host.innerHTML = "<ul><!-- comment node --><li><hello-world message.bind=\"message\"></hello-world></li></ul>";
+    document.body.appendChild(host);
+    await oneFrame()
+
+    expect(host.innerText.trim()).toBe('Hello from Aurelia!')
+
+    host.innerHTML = "<!-- component was here -->"
+    expect(host.innerText.trim()).toBe('')
+
+
+    host.innerHTML = "<ul><!-- comment node --><li><hello-world message.bind=\"message\"></hello-world></li></ul>";
+
+
+  })
+
   it('enhances component deep in new dom node', async () => {
     const host = document.createElement('div');
-    host.innerHTML = "<ul><li><hello-world message.bind=\"message\"></hello-world></li></ul>";
+    host.innerHTML = "<ul><!-- comment node --><li><hello-world message.bind=\"message\"></hello-world></li></ul>";
     document.body.appendChild(host);
     await oneFrame()
 
